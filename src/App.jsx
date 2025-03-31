@@ -1,95 +1,86 @@
 import React, { useState, useEffect, useRef } from "react";
 
 const App = () => {
-  let [value, setValue] = useState(5);
-  let [number, addNumber] = useState(false);
-  let [char, addChar] = useState(false);
-  let [pass, showpass] = useState("");
+  const [value, setValue] = useState(5);
+  const [number, addNumber] = useState(false);
+  const [char, addChar] = useState(false);
+  const [pass, showpass] = useState("");
 
-  let handleChange = (event) => {
-    setValue(event.target.value);
-  };
+  const passref = useRef(null);
 
   useEffect(() => {
     passGenerator();
-  }, [number, char, value, showpass]);
+  }, [number, char, value]);
 
-  let passref = useRef(null);
-
-  let password = "";
-  function passGenerator() {
+  const passGenerator = () => {
     let str = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-    let num = "1234567890";
-    let character = "!@#$%^&*()_";
-    {
-      number ? (str += num) : "";
-      char ? (str += character) : "";
-    }
+    if (number) str += "1234567890";
+    if (char) str += "!@#$%^&*()_";
 
+    let password = "";
     for (let i = 0; i < value; i++) {
       let randomindex = Math.floor(Math.random() * str.length);
       password += str[randomindex];
     }
-    showpass((pass = password));
-    console.log(password);
-  }
-
-  function handlepassGenerator() {
-    passGenerator();
-  }
+    showpass(password);
+  };
 
   const copytoClip = () => {
-    window.navigator.clipboard.writeText(pass);
-    alert("Password successfully Copied");
+    navigator.clipboard.writeText(pass);
+    alert("Password successfully copied!");
   };
 
   return (
-    <div className="bg-slate-950 h-screen flex items-center justify-center">
-      <div className="bg-slate-100 h-56 w-1/3 pt-4 shadow-md rounded-lg shadow-slate-500">
-        <h1 className="text-2xl text-center font-medium  shadow-black">
+    <div className="bg-slate-950 min-h-screen flex items-center justify-center px-4">
+      <div className="bg-slate-100 p-6 shadow-md rounded-lg w-full max-w-md">
+        <h1 className="text-2xl text-center font-medium mb-4">
           Password Generator
         </h1>
-        <div className="mt-4 flex justify-evenly">
+
+        <div className="flex items-center gap-2 mb-4">
           <input
-            className="rounded-md border-black border-solid border-2 "
-            type="value"
+            className="flex-grow p-2 border rounded-md"
+            type="text"
             readOnly
             value={pass}
             ref={passref}
           />
           <button
-            className="rounded-md border-black border-solid border-2 w-12 bg-blue-800 text-white"
+            className="px-4 py-2 bg-blue-800 text-white rounded-md hover:bg-blue-700"
             onClick={copytoClip}
           >
-            copy
+            Copy
           </button>
         </div>
-        <div className="flex justify-around w-full mt-9">
-          <div className="flex justify-evenly w-1/2 ml-3">
-            <input
-              type="range"
-              value={value}
-              min={5}
-              max={20}
-              onChange={handleChange}
-            />
-            {value}
-          </div>
-          <div className="flex justify-evenly mr-3 w-1/2">
-            <input type="checkbox" onChange={() => addNumber(!number)} />
-            <label htmlFor="">Numbers</label>
-            <input type="checkbox" onChange={() => addChar(!char)} />
-            <label htmlFor="">Characters</label>
-          </div>
+
+        <div className="mb-4">
+          <label className="block text-sm font-medium">Length: {value}</label>
+          <input
+            type="range"
+            value={value}
+            min={5}
+            max={20}
+            onChange={(e) => setValue(e.target.value)}
+            className="w-full"
+          />
         </div>
-        <div className="mt-4 flex justify-center">
-          <button
-            className="border-white bg-slate-950 text-white h-8 w-24 rounded-lg shadow-lg shadow-black hover:bg-slate-100 hover:text-slate-950 hover:border-black hover:border-solid hover:border-2 hover:delay-100"
-            onClick={handlepassGenerator}
-          >
-            Generate
-          </button>
+
+        <div className="flex justify-between mb-4">
+          <label className="flex items-center gap-2">
+            <input type="checkbox" onChange={() => addNumber(!number)} />{" "}
+            Numbers
+          </label>
+          <label className="flex items-center gap-2">
+            <input type="checkbox" onChange={() => addChar(!char)} /> Characters
+          </label>
         </div>
+
+        <button
+          className="w-full py-2 bg-slate-950 text-white rounded-lg hover:bg-slate-800"
+          onClick={passGenerator}
+        >
+          Generate
+        </button>
       </div>
     </div>
   );
